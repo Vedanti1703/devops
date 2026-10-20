@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Maintenance Records')}"></head>
+<body>
+
+<header th:replace="~{layout :: navbar}"></header>
+<div th:replace="~{layout :: alerts}"></div>
+
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1" id="page-title">Telecom Tower Maintenance Records</h2>
+            <p class="text-muted small mb-0">Search, track and progress field repair activities</p>
+        </div>
+        <div sec:authorize="hasAnyRole('TECHNICIAN', 'ADMIN')">
+            <a th:href="@{/records/new}" class="btn btn-primary" id="btn-create-record">
+                <i class="bi bi-plus-lg me-1"></i> New Maintenance Ticket
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card mb-4 bg-white" id="card-search-filter">
+        <div class="card-body">
+            <form th:action="@{/records}" method="get" class="row g-2 align-items-center" id="form-search-filter">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Search Tower ID / Location</label>
+                    <input type="text" class="form-control" id="input-search-keyword" name="keyword"
+                           th:value="${keyword}" placeholder="e.g. TWR-DEL-101 or Mumbai">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Status</label>
+                    <select class="form-select" id="select-filter-status" name="status">
+                        <option value="">All Statuses</option>
+                        <option th:each="st : ${allStatuses}" th:value="${st}" th:text="${st}"
+                                th:selected="${st == selectedStatus}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Priority</label>
+                    <select class="form-select" id="select-filter-priority" name="priority">
+                        <option value="">All Priorities</option>
+                        <option th:each="pr : ${allPriorities}" th:value="${pr}" th:text="${pr}"
+                                th:selected="${pr == selectedPriority}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2 align-self-end">
+                    <button type="submit" class="btn btn-dark w-100" id="btn-search-filter">
+                        <i class="bi bi-search me-1"></i> Filter
+                    </button>
+                    <a th:href="@{/records}" class="btn btn-outline-secondary" id="btn-reset-filter" title="Reset Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Records Table -->
+    <div class="card bg-white overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="table-records">
+                <thead class="table-light">
+                    <tr>
+                        <th id="th-id">ID</th>
+                        <th id="th-tower">Tower ID</th>
+                        <th id="th-location">Location</th>
+                        <th id="th-issue">Issue Type</th>
+                        <th id="th-priority">Priority</th>
+                        <th id="th-status">Status</th>
+                        <th id="th-technician">Assigned Tech</th>
+                        <th id="th-created">Created At</th>
+                        <th id="th-actions" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-records">
+                    <tr th:if="${#lists.isEmpty(records)}" id="row-no-records">
+                        <td colspan="9" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+                            No maintenance records found matching the criteria.
+                        </td>
+                    </tr>
+                    <tr th:each="rec : ${records}" th:id="'record-row-' + ${rec.id}">
+                        <td class="fw-bold text-muted" th:text="'#' + ${rec.id}" th:id="'col-id-' + ${rec.id}">#1</td>
+                        <td class="fw-semibold text-primary" th:text="${rec.towerId}" th:id="'col-tower-' + ${rec.id}">TWR-01</td>
+                        <td th:text="${rec.location}" th:id="'col-location-' + ${rec.id}">Sector 12, Delhi</td>
+                        <td th:text="${rec.issueType}" th:id="'col-issue-' + ${rec.id}">Power Failure</td>
+                        <td>
+                            <span class="badge text-white px-2 py-1"
+                                  th:classappend="'badge-priority-' + ${rec.priority}"
+                                  th:text="${rec.priority}" th:id="'col-priority-' + ${rec.id}">HIGH</span>
+                        </td>
+                        <td>
+                            <span class="badge text-white px-2 py-1"
+                                  th:classappend="'badge-status-' + ${rec.status}"
+                                  th:text="${rec.status}" th:id="'col-status-' + ${rec.id}">OPEN</span>
+                        </td>
+                        <td th:text="${rec.assignedTechnician}" th:id="'col-tech-' + ${rec.id}">tech1</td>
+                        <td class="small text-muted" th:text="${#temporals.format(rec.createdAt, 'yyyy-MM-dd HH:mm')}" th:id="'col-date-' + ${rec.id}">2026-10-20 12:00</td>
+                        <td class="text-end">
+                            <a th:href="@{'/records/' + ${rec.id}}" class="btn btn-outline-primary btn-sm"
+                               th:id="'btn-view-' + ${rec.id}">
+                                <i class="bi bi-eye me-1"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>

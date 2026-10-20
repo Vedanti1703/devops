@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Edit Record #' + ${record.id})}"></head>
+<body>
+
+<header th:replace="~{layout :: navbar}"></header>
+<div th:replace="~{layout :: alerts}"></div>
+
+<main class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-white p-4">
+                <div class="d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom">
+                    <div>
+                        <h3 class="fw-bold mb-1" id="edit-title">Admin Edit &mdash; Ticket #<span th:text="${record.id}">1</span></h3>
+                        <p class="text-muted small mb-0">Modify tower maintenance details</p>
+                    </div>
+                    <a th:href="@{'/records/' + ${record.id}}" class="btn btn-outline-secondary btn-sm" id="btn-cancel-edit">
+                        <i class="bi bi-x-lg me-1"></i> Cancel
+                    </a>
+                </div>
+
+                <form th:action="@{'/records/' + ${record.id} + '/update'}" th:object="${record}" method="post" id="form-edit-record">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="edit-tower-id" class="form-label fw-semibold small">Tower Identifier</label>
+                            <input type="text" class="form-control" id="edit-tower-id" th:field="*{towerId}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="edit-location" class="form-label fw-semibold small">Location / Shelter</label>
+                            <input type="text" class="form-control" id="edit-location" th:field="*{location}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="edit-issue-type" class="form-label fw-semibold small">Issue Category</label>
+                            <input type="text" class="form-control" id="edit-issue-type" th:field="*{issueType}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="edit-priority" class="form-label fw-semibold small">Priority Level</label>
+                            <select class="form-select" id="edit-priority" th:field="*{priority}">
+                                <option th:each="pr : ${allPriorities}" th:value="${pr}" th:text="${pr}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="edit-assigned-tech" class="form-label fw-semibold small">Assigned Technician</label>
+                            <input type="text" class="form-control" id="edit-assigned-tech" th:field="*{assignedTechnician}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="edit-description" class="form-label fw-semibold small">Technical Description</label>
+                            <textarea class="form-control" id="edit-description" rows="4" th:field="*{description}" required></textarea>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end gap-2 pt-3 border-top">
+                            <a th:href="@{'/records/' + ${record.id}}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-warning px-4" id="btn-save-edit">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>
