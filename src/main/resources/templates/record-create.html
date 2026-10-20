@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Create Maintenance Record')}"></head>
+<body>
+
+<header th:replace="~{layout :: navbar}"></header>
+<div th:replace="~{layout :: alerts}"></div>
+
+<main class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-white p-4">
+                <div class="d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom">
+                    <div>
+                        <h3 class="fw-bold mb-1" id="create-title">New Maintenance Record</h3>
+                        <p class="text-muted small mb-0">Record a new telecom tower operational issue or scheduled service</p>
+                    </div>
+                    <a th:href="@{/records}" class="btn btn-outline-secondary btn-sm" id="btn-back-to-list">
+                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+
+                <form th:action="@{/records/save}" th:object="${record}" method="post" id="form-create-record">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="input-tower-id" class="form-label fw-semibold small">Tower Identifier <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="input-tower-id" th:field="*{towerId}"
+                                   placeholder="e.g. TWR-DEL-101" th:classappend="${#fields.hasErrors('towerId')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:errors="*{towerId}">Tower ID error</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="input-location" class="form-label fw-semibold small">Location / Shelter <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="input-location" th:field="*{location}"
+                                   placeholder="e.g. Sector 62, Noida, UP" th:classappend="${#fields.hasErrors('location')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:errors="*{location}">Location error</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="select-issue-type" class="form-label fw-semibold small">Issue Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="select-issue-type" th:field="*{issueType}"
+                                    th:classappend="${#fields.hasErrors('issueType')} ? 'is-invalid' : ''">
+                                <option value="">Select Issue Type...</option>
+                                <option value="POWER_FAILURE">Power Failure / DG Fault</option>
+                                <option value="BATTERY_DRAIN">Backup Battery Bank Drain</option>
+                                <option value="ANTENNA_MISALIGNMENT">Antenna Misalignment / Tilt</option>
+                                <option value="FIBER_CUT">Optical Fiber Cable Cut</option>
+                                <option value="AIR_CONDITIONING">Shelter HVAC / Cooling Fault</option>
+                                <option value="SECURITY_ALARM">Door Intrusion / Security Alarm</option>
+                                <option value="ROUTINE_PREVENTIVE">Routine Preventive Maintenance</option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{issueType}">Issue type error</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="select-priority" class="form-label fw-semibold small">Priority Level <span class="text-danger">*</span></label>
+                            <select class="form-select" id="select-priority" th:field="*{priority}"
+                                    th:classappend="${#fields.hasErrors('priority')} ? 'is-invalid' : ''">
+                                <option value="">Select Priority...</option>
+                                <option th:each="pr : ${allPriorities}" th:value="${pr}" th:text="${pr}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{priority}">Priority error</div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="input-assigned-tech" class="form-label fw-semibold small">Assigned Field Technician <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="input-assigned-tech" th:field="*{assignedTechnician}"
+                                   placeholder="e.g. tech1" th:classappend="${#fields.hasErrors('assignedTechnician')} ? 'is-invalid' : ''">
+                            <div class="invalid-feedback" th:errors="*{assignedTechnician}">Technician error</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="input-description" class="form-label fw-semibold small">Detailed Technical Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="input-description" rows="4" th:field="*{description}"
+                                      placeholder="Provide technical diagnosis, observed symptoms, affected sectors, or required spare parts..."
+                                      th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"></textarea>
+                            <div class="invalid-feedback" th:errors="*{description}">Description error</div>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end gap-2 pt-3 border-top">
+                            <a th:href="@{/records}" class="btn btn-outline-secondary" id="btn-cancel-record">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4" id="btn-submit-record">
+                                <i class="bi bi-check-lg me-1"></i> Submit Maintenance Ticket
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>

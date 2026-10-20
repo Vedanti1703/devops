@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Record #' + ${record.id})}"></head>
+<body>
+
+<header th:replace="~{layout :: navbar}"></header>
+<div th:replace="~{layout :: alerts}"></div>
+
+<main class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card bg-white p-4" id="card-record-detail">
+                
+                <!-- Header with Back & Edit -->
+                <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <a th:href="@{/records}" class="btn btn-outline-secondary btn-sm" id="btn-back-to-records">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                        <div>
+                            <h3 class="fw-bold mb-0">
+                                Ticket <span class="text-primary" id="detail-ticket-id" th:text="'#' + ${record.id}">#1</span>
+                                &mdash; <span id="detail-tower-id" th:text="${record.towerId}">TWR-01</span>
+                            </h3>
+                            <span class="text-muted small">Recorded in Telecom Infrastructure System</span>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a sec:authorize="hasRole('ADMIN')" th:href="@{'/records/' + ${record.id} + '/edit'}"
+                           class="btn btn-outline-warning btn-sm" id="btn-edit-record">
+                            <i class="bi bi-pencil-square me-1"></i> Admin Edit
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Status Banner -->
+                <div class="p-3 mb-4 rounded bg-light border d-flex justify-content-between align-items-center flex-wrap gap-2" id="banner-status-info">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small">Current Workflow Status:</span>
+                        <span class="badge text-white px-3 py-2 fs-6"
+                              th:classappend="'badge-status-' + ${record.status}"
+                              th:text="${record.status}" id="detail-status">OPEN</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small">Priority:</span>
+                        <span class="badge text-white px-3 py-2 fs-6"
+                              th:classappend="'badge-priority-' + ${record.priority}"
+                              th:text="${record.priority}" id="detail-priority">HIGH</span>
+                    </div>
+                </div>
+
+                <!-- Key Ticket Metadata Grid -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white h-100">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-3">Tower &amp; Location Details</h6>
+                            <div class="mb-2">
+                                <span class="text-muted small d-block">Tower Identifier</span>
+                                <span class="fw-semibold" th:text="${record.towerId}">TWR-01</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted small d-block">Physical Site / Location</span>
+                                <span class="fw-semibold" id="detail-location" th:text="${record.location}">Sector 12, Delhi</span>
+                            </div>
+                            <div>
+                                <span class="text-muted small d-block">Issue Classification</span>
+                                <span class="fw-semibold text-danger" id="detail-issue-type" th:text="${record.issueType}">POWER_FAILURE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white h-100">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-3">Assignment &amp; Audit Trail</h6>
+                            <div class="mb-2">
+                                <span class="text-muted small d-block">Assigned Field Technician</span>
+                                <span class="fw-semibold text-primary" id="detail-tech" th:text="${record.assignedTechnician}">tech1</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted small d-block">Logged By</span>
+                                <span class="fw-semibold" id="detail-created-by" th:text="${record.createdBy}">admin</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <span class="text-muted small d-block">Created Timestamp</span>
+                                    <span class="small" id="detail-created-at" th:text="${#temporals.format(record.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-10-20</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-muted small d-block">Last Updated</span>
+                                    <span class="small" id="detail-updated-at" th:text="${#temporals.format(record.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-10-20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="p-3 border rounded bg-white">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Technical Description &amp; Problem Log</h6>
+                            <p class="mb-0 text-dark" style="white-space: pre-wrap;" id="detail-description" th:text="${record.description}">Description text</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workflow Actions Panel -->
+                <div class="card border-primary border-opacity-25 bg-primary bg-opacity-10 p-3" id="panel-workflow-actions">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-repeat text-primary"></i> Workflow Progression Actions
+                    </h5>
+
+                    <!-- Status closed notice -->
+                    <div th:if="${record.status.name() == 'CLOSED'}" class="alert alert-secondary mb-0" id="msg-ticket-closed">
+                        <i class="bi bi-lock-fill me-1"></i> This ticket is finalized and <strong>CLOSED</strong>. No further state transitions allowed.
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2" th:if="${record.status.name() != 'CLOSED'}">
+                        
+                        <!-- TECHNICIAN Transitions: OPEN -> IN_PROGRESS -->
+                        <form th:if="${record.status.name() == 'OPEN'}" sec:authorize="hasAnyRole('TECHNICIAN', 'ADMIN')"
+                              th:action="@{'/records/' + ${record.id} + '/transition'}" method="post" class="m-0">
+                            <input type="hidden" name="targetStatus" value="IN_PROGRESS">
+                            <button type="submit" class="btn btn-primary" id="btn-start-work">
+                                <i class="bi bi-play-circle me-1"></i> Start Work (Mark IN_PROGRESS)
+                            </button>
+                        </form>
+
+                        <!-- TECHNICIAN Transitions: IN_PROGRESS -> COMPLETED -->
+                        <form th:if="${record.status.name() == 'IN_PROGRESS'}" sec:authorize="hasAnyRole('TECHNICIAN', 'ADMIN')"
+                              th:action="@{'/records/' + ${record.id} + '/transition'}" method="post" class="m-0">
+                            <input type="hidden" name="targetStatus" value="COMPLETED">
+                            <button type="submit" class="btn btn-info text-white" id="btn-complete-work">
+                                <i class="bi bi-check2-circle me-1"></i> Mark Work Completed (COMPLETED)
+                            </button>
+                        </form>
+
+                        <!-- SUPERVISOR Transitions: COMPLETED -> VERIFIED -->
+                        <form th:if="${record.status.name() == 'COMPLETED'}" sec:authorize="hasAnyRole('SUPERVISOR', 'ADMIN')"
+                              th:action="@{'/records/' + ${record.id} + '/transition'}" method="post" class="m-0">
+                            <input type="hidden" name="targetStatus" value="VERIFIED">
+                            <button type="submit" class="btn btn-success" id="btn-approve-verify">
+                                <i class="bi bi-patch-check-fill me-1"></i> Approve &amp; Verify Work (VERIFIED)
+                            </button>
+                        </form>
+
+                        <!-- SUPERVISOR Transitions: COMPLETED -> IN_PROGRESS (Reject) -->
+                        <form th:if="${record.status.name() == 'COMPLETED'}" sec:authorize="hasAnyRole('SUPERVISOR', 'ADMIN')"
+                              th:action="@{'/records/' + ${record.id} + '/transition'}" method="post" class="m-0">
+                            <input type="hidden" name="targetStatus" value="IN_PROGRESS">
+                            <button type="submit" class="btn btn-danger" id="btn-reject-work">
+                                <i class="bi bi-x-circle-fill me-1"></i> Reject Work (Send Back to IN_PROGRESS)
+                            </button>
+                        </form>
+
+                        <!-- ADMIN Transitions: VERIFIED -> CLOSED -->
+                        <form th:if="${record.status.name() == 'VERIFIED'}" sec:authorize="hasRole('ADMIN')"
+                              th:action="@{'/records/' + ${record.id} + '/transition'}" method="post" class="m-0">
+                            <input type="hidden" name="targetStatus" value="CLOSED">
+                            <button type="submit" class="btn btn-dark" id="btn-close-record">
+                                <i class="bi bi-archive-fill me-1"></i> Archive &amp; Close Ticket (CLOSED)
+                            </button>
+                        </form>
+
+                        <div th:if="${record.status.name() == 'VERIFIED'}" sec:authorize="!hasRole('ADMIN')" class="text-muted small align-self-center">
+                            <em>Ticket is verified and awaiting administrator final closure.</em>
+                        </div>
+
+                        <div th:if="${record.status.name() == 'COMPLETED'}" sec:authorize="hasRole('TECHNICIAN') and !hasAnyRole('SUPERVISOR', 'ADMIN')" class="text-muted small align-self-center">
+                            <em>Ticket is submitted for supervisor review and verification.</em>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>

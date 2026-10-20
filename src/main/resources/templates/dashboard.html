@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Operations Dashboard')}"></head>
+<body>
+
+<header th:replace="~{layout :: navbar}"></header>
+<div th:replace="~{layout :: alerts}"></div>
+
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1" id="dashboard-title">Telecom Operations KPI Dashboard</h2>
+            <p class="text-muted small mb-0">High-level overview of cellular tower maintenance tickets and SLA statuses</p>
+        </div>
+        <div>
+            <a th:href="@{/records}" class="btn btn-outline-primary" id="btn-dashboard-to-records">
+                <i class="bi bi-list-columns me-1"></i> View All Records
+            </a>
+        </div>
+    </div>
+
+    <!-- Top KPI Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 bg-white h-100" id="card-total-records">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Total Tickets</span>
+                        <h2 class="fw-bold my-1 text-dark" id="stat-total-count" th:text="${stats.total}">0</h2>
+                        <span class="text-muted small">Registered in system</span>
+                    </div>
+                    <div class="p-3 bg-primary bg-opacity-10 rounded-circle text-primary">
+                        <i class="bi bi-folder2-open fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 bg-white h-100" id="card-pending-records">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Pending Action</span>
+                        <h2 class="fw-bold my-1 text-warning" id="stat-pending-count" th:text="${stats.pending}">0</h2>
+                        <span class="text-muted small">OPEN &amp; IN_PROGRESS</span>
+                    </div>
+                    <div class="p-3 bg-warning bg-opacity-10 rounded-circle text-warning">
+                        <i class="bi bi-hourglass-split fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 bg-white h-100" id="card-completed-records">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Resolved / Verified</span>
+                        <h2 class="fw-bold my-1 text-success" id="stat-completed-count" th:text="${stats.resolved}">0</h2>
+                        <span class="text-muted small">Completed, Verified, Closed</span>
+                    </div>
+                    <div class="p-3 bg-success bg-opacity-10 rounded-circle text-success">
+                        <i class="bi bi-check2-circle fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card p-3 bg-white h-100" id="card-closed-records">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Archived Closed</span>
+                        <h2 class="fw-bold my-1 text-secondary" id="stat-closed-count" th:text="${stats.closedCount}">0</h2>
+                        <span class="text-muted small">Finalized tickets</span>
+                    </div>
+                    <div class="p-3 bg-secondary bg-opacity-10 rounded-circle text-secondary">
+                        <i class="bi bi-archive fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status and Priority Breakdown Details Row -->
+    <div class="row g-4">
+        
+        <!-- Status Breakdown Card -->
+        <div class="col-md-6">
+            <div class="card p-4 bg-white h-100" id="card-status-breakdown">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-pie-chart text-primary"></i> Records by Workflow Status
+                </h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><span class="badge badge-status-OPEN me-2">&bull;</span> OPEN (Newly Logged)</span>
+                        <span class="badge bg-light text-dark fw-bold" id="stat-open-count" th:text="${stats.openCount}">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><span class="badge badge-status-IN_PROGRESS me-2">&bull;</span> IN_PROGRESS (Under Repair)</span>
+                        <span class="badge bg-light text-dark fw-bold" id="stat-in-progress-count" th:text="${stats.inProgressCount}">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><span class="badge badge-status-COMPLETED me-2">&bull;</span> COMPLETED (Pending Review)</span>
+                        <span class="badge bg-light text-dark fw-bold" id="stat-comp-count" th:text="${stats.completedCount}">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><span class="badge badge-status-VERIFIED me-2">&bull;</span> VERIFIED (Supervisor Approved)</span>
+                        <span class="badge bg-light text-dark fw-bold" id="stat-verified-count" th:text="${stats.verifiedCount}">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><span class="badge badge-status-CLOSED me-2">&bull;</span> CLOSED (Archived)</span>
+                        <span class="badge bg-light text-dark fw-bold" id="stat-clsd-count" th:text="${stats.closedCount}">0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Priority Breakdown Card -->
+        <div class="col-md-6">
+            <div class="card p-4 bg-white h-100" id="card-priority-breakdown">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-bar-chart text-danger"></i> Records by Incident Priority
+                </h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0" th:each="entry : ${stats.priorityCounts}">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge text-white px-2 py-1"
+                                  th:classappend="'badge-priority-' + ${entry.key}"
+                                  th:text="${entry.key}">CRITICAL</span>
+                            <span class="text-muted small" th:text="${entry.key.name() == 'CRITICAL' ? 'Major outage / emergency' : (entry.key.name() == 'HIGH' ? 'Partial sector degradation' : (entry.key.name() == 'MEDIUM' ? 'Minor redundancy loss' : 'Low risk scheduled check'))}">Description</span>
+                        </div>
+                        <span class="badge bg-light text-dark fw-bold"
+                              th:id="'stat-priority-' + ${entry.key}"
+                              th:text="${entry.value}">0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+</body>
+</html>
