@@ -16,7 +16,7 @@ pipeline {
 
     // WRITE IT HERE
     environment {
-        TOMCAT_HOME = 'C:\Program Files\apache-tomcat-10.1.61'
+        TOMCAT_HOME = 'C:\\Program Files\\apache-tomcat-10.1.61'
     }
 
     stages {
