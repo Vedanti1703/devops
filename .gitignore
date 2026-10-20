@@ -1,0 +1,71 @@
+# ========================
+# Maven Build Output
+# ========================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ========================
+# H2 Database Files (do NOT commit runtime DB files)
+# ========================
+data/
+*.mv.db
+*.trace.db
+
+# ========================
+# IDE - IntelliJ IDEA
+# ========================
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ========================
+# IDE - Eclipse / STS
+# ========================
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+# ========================
+# IDE - VS Code
+# ========================
+.vscode/
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# Spring Boot / Application Secrets (never commit)
+# ========================
+application-prod.properties
+application-secret.properties
+*.env
+secrets.yml
+
+# ========================
+# Docker
+# ========================
+docker-compose.override.yml
+
+# ========================
+# Ansible Vault secrets
+# ========================
+*.vault
+vault_pass.txt
