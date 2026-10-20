@@ -142,32 +142,37 @@
 
 ## 2. Product Backlog Table
 
-| Backlog ID | User Story Title | Priority | Story Points (Fibonacci) | Sprint | Target Task Mapping |
-|---|---|---|:---:|:---:|---|
-| **PB-01** | User Authentication & Role Security | High | 5 | Sprint 1 | TASK-07, TASK-08 |
-| **PB-02** | Maintenance Record Domain & DB Persistence | High | 5 | Sprint 1 | TASK-05, TASK-06 |
-| **PB-03** | Record Creation Form with Validation | High | 3 | Sprint 2 | TASK-09 |
-| **PB-04** | Record Listing Table View | High | 3 | Sprint 2 | TASK-10 |
-| **PB-05** | Record Detail Inspection View | Medium | 2 | Sprint 2 | TASK-11 |
-| **PB-06** | Role-Based State Transition Workflow Engine | High | 8 | Sprint 2 | TASK-12 |
-| **PB-07** | Search & Filter Capabilities | Medium | 5 | Sprint 3 | TASK-10 |
-| **PB-08** | Executive KPI Summary Dashboard | Medium | 5 | Sprint 3 | TASK-13, TASK-14 |
+| Backlog ID | User Story Title | Priority | Story Points | Sprint | Status | Target Task Mapping |
+|---|---|---|:---:|:---:|:---:|---|
+| **PB-01** | User Authentication & Role Security | High | 5 | Sprint 1 | **DONE** | TASK-07, TASK-08 |
+| **PB-02** | Maintenance Record Domain & DB Persistence | High | 5 | Sprint 1 | **DONE** | TASK-05, TASK-06 |
+| **PB-03** | Record Creation Form with Validation | High | 3 | Sprint 2 | **DONE** | TASK-09 |
+| **PB-04** | Record Listing Table View | High | 3 | Sprint 2 | **DONE** | TASK-10 |
+| **PB-05** | Record Detail Inspection View | Medium | 2 | Sprint 2 | **DONE** | TASK-11 |
+| **PB-06** | Role-Based State Transition Workflow Engine | High | 8 | Sprint 2 | **DONE** | TASK-12 |
+| **PB-07** | Search & Filter Capabilities | Medium | 5 | Sprint 3 | **DONE** | TASK-10 |
+| **PB-08** | Executive KPI Summary Dashboard | Medium | 5 | Sprint 3 | **DONE** | TASK-13, TASK-14 |
 
 ---
 
-## 3. 14-Task Kanban Board
+## 3. 14-Task Kanban Board (MVP v1.0.0 Finalized)
 
-| Backlog (Pending) | To Do | In Progress | Review | Done |
+| Backlog | To Do | In Progress | Review | Done (Completed & Verified) |
 |---|---|---|---|---|
-| TASK-08 (Layout Polish) | TASK-04 (Git & GH init) | TASK-01 (Problem Def) | - | - |
-| TASK-09 (Create Record Form) | TASK-05 (Entity & JPA) | TASK-02 (Agile Plan) | - | - |
-| TASK-10 (List & Filter) | TASK-06 (Service Layer) | TASK-03 (Arch & Skeleton) | - | - |
-| TASK-11 (Detail View) | TASK-07 (Security Config) | - | - | - |
-| TASK-12 (State Machine) | - | - | - | - |
-| TASK-13 (Dashboard) | - | - | - | - |
-| TASK-14 (Test Suite & Tag) | - | - | - | - |
-
-*(Note: Kanban board progress will be actively updated across sprint executions).*
+| - | - | - | - | **TASK-01** (Problem Def & Scope) |
+| - | - | - | - | **TASK-02** (Agile Backlog & Kanban) |
+| - | - | - | - | **TASK-03** (Architecture & Skeleton) |
+| - | - | - | - | **TASK-04** (Git/GitHub & Issues) |
+| - | - | - | - | **TASK-05** (JPA Entity & Repository) |
+| - | - | - | - | **TASK-06** (Service Layer & Rules) |
+| - | - | - | - | **TASK-07** (Security Config & RBAC) |
+| - | - | - | - | **TASK-08** (Layout & Login Views) |
+| - | - | - | - | **TASK-09** (Record Create Form) |
+| - | - | - | - | **TASK-10** (Record List & Filter) |
+| - | - | - | - | **TASK-11** (Record Detail View) |
+| - | - | - | - | **TASK-12** (State Transition Engine) |
+| - | - | - | - | **TASK-13** (Executive KPI Dashboard) |
+| - | - | - | - | **TASK-14** (Test Suite & Tag v1.0.0) |
 
 ---
 
@@ -178,42 +183,34 @@ gantt
     title 3-Sprint Delivery Timeline
     dateFormat  YYYY-MM-DD
     section Sprint 1: Foundation & Security
-    Project Setup & Arch Docs       :2026-10-12, 2d
-    Data Model & Persistence        :2026-10-14, 2d
-    Security & Authentication       :2026-10-16, 2d
+    Project Setup & Arch Docs       :done, 2026-10-12, 2d
+    Data Model & Persistence        :done, 2026-10-14, 2d
+    Security & Authentication       :done, 2026-10-16, 2d
     section Sprint 2: Core Records & State Machine
-    Record Creation & Validation    :2026-10-18, 3d
-    Record List & Details Views     :2026-10-21, 2d
-    Role State Transition Logic     :2026-10-23, 3d
+    Record Creation & Validation    :done, 2026-10-18, 3d
+    Record List & Details Views     :done, 2026-10-21, 2d
+    Role State Transition Logic     :done, 2026-10-23, 3d
     section Sprint 3: Dashboard, Filter & CI
-    Search & Filter Capabilities    :2026-10-26, 2d
-    Summary Dashboard Metrics       :2026-10-28, 2d
-    Automated Testing & Release v1.0:2026-10-30, 2d
+    Search & Filter Capabilities    :done, 2026-10-26, 2d
+    Summary Dashboard Metrics       :done, 2026-10-28, 2d
+    Automated Testing & Release v1.0:done, 2026-10-30, 2d
 ```
 
 ### Sprint Breakdown
-- **Sprint 1: Architecture, Data & Security Foundation (Tasks 1–7)**
-  - Problem definition, agile backlog, architecture design.
-  - Spring Boot 3 initialization, JPA Entity, H2 database.
-  - Spring Security with in-memory users (`tech1`, `sup1`, `admin`).
-- **Sprint 2: Record Operations & State Transition Workflow (Tasks 8–12)**
-  - Navigation layout, record creation form with Bean Validation.
-  - Record list and detail views.
-  - Strict transition logic (OPEN $\to$ IN_PROGRESS $\to$ COMPLETED $\to$ VERIFIED $\to$ CLOSED, with rejection loop).
-- **Sprint 3: Dashboard, Filtering, Automation & Release (Tasks 13–14)**
-  - Filtering by tower ID, location, status, priority.
-  - Dashboard KPIs (total, pending, completed, breakdown by priority/status).
-  - JUnit test suite, merge conflicts demonstration, release tagging (`v1.0.0`).
+- **Sprint 1: Architecture, Data & Security Foundation (Tasks 1–7)** &mdash; Completed
+- **Sprint 2: Record Operations & State Transition Workflow (Tasks 8–12)** &mdash; Completed
+- **Sprint 3: Dashboard, Filtering, Automation & Release (Tasks 13–14)** &mdash; Completed
 
 ---
 
 ## 5. Definition of Done (DoD) Checklist
 
 For any user story / task to be declared **DONE**, all criteria below must be met:
-- [ ] Code compiles cleanly with zero Maven warnings or errors.
-- [ ] All unit tests pass (`mvn clean test`).
-- [ ] Code strictly follows established branching policy (`feature/*` merged via pull request into `develop`).
-- [ ] All forms, inputs, and action buttons have stable HTML element `id` attributes for automated Selenium test scripts.
-- [ ] User-facing state transitions reject illegal role transitions with informative feedback.
-- [ ] Pull request created, reviewed, and cleanly merged without unhandled merge artifacts.
-- [ ] Task logged with execution evidence in `/docs/evidence-log.md`.
+- [x] Code compiles cleanly with zero Maven warnings or errors.
+- [x] All unit tests pass (`mvn clean test`).
+- [x] Code strictly follows established branching policy (`feature/*` merged via pull request into `develop`).
+- [x] All forms, inputs, and action buttons have stable HTML element `id` attributes for automated Selenium test scripts.
+- [x] User-facing state transitions reject illegal role transitions with informative feedback.
+- [x] Pull request created, reviewed, and cleanly merged without unhandled merge artifacts.
+- [x] Task logged with execution evidence in `/docs/evidence-log.md`.
+

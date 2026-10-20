@@ -1,5 +1,10 @@
 # Telecom Tower Maintenance Portal
 
+[![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/Vedanti1703/devops/releases/tag/v1.0.0)
+[![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Vedanti1703/devops)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
+
 A **role-based web application** for managing telecom tower field maintenance operations — built with **Java 17, Spring Boot 3, Thymeleaf, Spring Security, and H2/MySQL**.
 
 ---

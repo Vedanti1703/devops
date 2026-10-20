@@ -116,4 +116,48 @@
   - Screenshot of terminal showing `git log --oneline --graph` with all feature commits.
   - Screenshot of Pull Request #9 on GitHub showing the description and checks.
 
+---
+
+## Task 6: MVP Completion and Git Collaboration
+- **Status:** COMPLETED
+- **Features Implemented & Verified:**
+  - Full record update capability (`/records/{id}/edit`, `/records/{id}/update`)
+  - Search & filter engine by Tower ID, Location, Status, and Priority
+  - Role-based state transition workflow engine (Technician $\to$ Supervisor $\to$ Admin)
+  - Executive KPI summary dashboard (`/dashboard`)
+  - 14 automated unit and integration tests passing (`mvn clean test`)
+- **Deliberate Merge Conflict Demonstration:**
+  - Branch `feature/ui-title-change`: Navbar title changed to `"Telecom Tower Portal - Ops"` and merged to `develop` via PR #10.
+  - Branch `feature/update-search-workflow-dashboard`: Navbar title changed to `"Tower Maintenance Portal - Dashboard"`.
+  - Merged `develop` into `feature/update-search-workflow-dashboard`, triggering conflict on `src/main/resources/templates/layout.html`:
+    ```html
+    <<<<<<< HEAD
+                    <span>Tower Maintenance Portal - Dashboard</span>
+    =======
+                    <span>Telecom Tower Portal - Ops</span>
+    >>>>>>> develop
+    ```
+  - **Resolution Applied:** Unified brand title:
+    ```html
+                    <span>Telecom Tower Maintenance Portal</span>
+    ```
+  - Committed resolution: `fix(merge): resolve title conflict in layout.html between ops and dashboard branches`
+- **Pull Requests Merged:**
+  - **PR #10:** https://github.com/Vedanti1703/devops/pull/10 (`feature/ui-title-change` $\to$ `develop`)
+  - **PR #11:** https://github.com/Vedanti1703/devops/pull/11 (`feature/update-search-workflow-dashboard` $\to$ `develop`)
+  - **PR #12:** https://github.com/Vedanti1703/devops/pull/12 (`develop` $\to$ `main` release)
+- **Release Tag:**
+  - Annotated tag: `v1.0.0`
+  - Tag message: `"MVP release baseline"`
+  - Tag URL: https://github.com/Vedanti1703/devops/releases/tag/v1.0.0
+- **Final Test Verification:**
+  - Command: `mvn clean test`
+  - Result: `BUILD SUCCESS` (14 tests passed, 0 failures, 0 errors)
+- **Manual Screenshots Required:**
+  - Screenshot of terminal showing the merge conflict markers in `layout.html`.
+  - Screenshot of PR #11 and PR #12 merged on GitHub.
+  - Screenshot of GitHub releases page showing tag `v1.0.0`.
+  - Screenshot of Dashboard page (`http://localhost:8081/dashboard`) showing KPI cards.
+
+
 
