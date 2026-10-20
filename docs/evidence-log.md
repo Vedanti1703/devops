@@ -94,3 +94,26 @@
   - Screenshot of GitHub repository page showing branches `main` and `develop`.
   - Screenshot of GitHub Issues tab showing all 8 issues created.
 
+---
+
+## Task 5: Feature Development with Branching
+- **Status:** IN PROGRESS (PR #9 Created - Awaiting Review)
+- **Branch Created:** `feature/create-view-records` (branched off `develop`)
+- **Commits Created in Small Increments:**
+  1. `96aaf23` feat: add maintenance record entity and enums
+  2. `ac248d0` feat: add maintenance record spring data jpa repository
+  3. `e4e0da9` feat: add maintenance service with state workflow and security config
+  4. `ff98996` feat: add auth, dashboard, and maintenance record controllers
+  5. `6f9f4bc` feat: add thymeleaf templates with bootstrap 5 and stable element ids
+  6. `38d5cbb` test: add unit and integration test suite for maintenance records and state workflow
+- **Pull Request Created:**
+  - **PR #9:** https://github.com/Vedanti1703/devops/pull/9
+  - Base: `develop` | Head: `feature/create-view-records`
+  - Closes issues #1 through #8
+- **Test Results:**
+  - 14 automated tests run, 0 failures, 0 errors (**100% PASS**)
+- **Manual Screenshot Required:**
+  - Screenshot of terminal showing `git log --oneline --graph` with all feature commits.
+  - Screenshot of Pull Request #9 on GitHub showing the description and checks.
+
+
