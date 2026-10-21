@@ -87,5 +87,84 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy Container') {
+            steps {
+                bat '''
+                    @echo off
+                    echo Inspecting existing container image for rollback tracking...
+                    docker inspect --format="{{.Config.Image}}" %CONTAINER_NAME% > previous-image.txt 2>nul || echo None > previous-image.txt
+                    echo Previous container image:
+                    type previous-image.txt
+                    echo Stopping and removing old container if present...
+                    docker stop %CONTAINER_NAME% 2>nul || verify > nul
+                    docker rm -f %CONTAINER_NAME% 2>nul || verify > nul
+                    echo Launching fresh container %CONTAINER_NAME% on host port %HOST_PORT%...
+                    docker run -d --name %CONTAINER_NAME% -p %HOST_PORT%:8080 --restart unless-stopped %IMAGE_NAME%:%IMAGE_TAG%
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                bat '''
+                    @echo off
+                    set /a ATTEMPTS=0
+                    :HEALTH_LOOP
+                    set /a ATTEMPTS+=1
+                    echo [Health Check] Polling container on port %HOST_PORT% (attempt %ATTEMPTS% of 10)...
+                    curl.exe -s -f http://localhost:%HOST_PORT%/actuator/health | findstr /I "UP" > nul
+                    if %ERRORLEVEL% EQU 0 (
+                        echo ==========================================================
+                        echo Container is UP and healthy!
+                        echo Response:
+                        curl.exe -s http://localhost:%HOST_PORT%/actuator/health
+                        echo.
+                        echo ==========================================================
+                        goto :HEALTH_SUCCESS
+                    )
+                    if %ATTEMPTS% GEQ 10 (
+                        echo ==========================================================
+                        echo [ERROR] Container health check failed after 10 attempts!
+                        echo Dumping container logs for %CONTAINER_NAME%:
+                        docker logs %CONTAINER_NAME%
+                        echo ==========================================================
+                        exit /b 1
+                    )
+                    timeout /t 3 /nobreak > nul
+                    goto :HEALTH_LOOP
+                    :HEALTH_SUCCESS
+                '''
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            when {
+                expression { params.DEPLOY_TO_TOMCAT == true }
+            }
+            steps {
+                bat 'copy /Y target\\*.war "%TOMCAT_HOME%\\webapps\\tower-portal-%ENVIRONMENT%.war"'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "=========================================================="
+            echo "PIPELINE & DEPLOYMENT SUCCESSFUL!"
+            echo "Deployed Image: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Container Name: ${CONTAINER_NAME}"
+            echo "Application URL: http://localhost:${HOST_PORT}"
+            echo "Health Endpoint: http://localhost:${HOST_PORT}/actuator/health"
+            echo "=========================================================="
+        }
+        failure {
+            echo "=========================================================="
+            echo "PIPELINE OR DEPLOYMENT FAILED!"
+            echo "Deployment was blocked or health check failed."
+            echo "Dumping container logs for ${CONTAINER_NAME}..."
+            echo "=========================================================="
+            bat 'docker logs %CONTAINER_NAME% 2>nul || echo Container was not running'
+        }
     }
 }
