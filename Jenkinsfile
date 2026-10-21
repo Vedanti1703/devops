@@ -79,7 +79,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
                     bat '''
-                        echo %DH_PASS%| docker login -u %DH_USER% --password-stdin
+                        @echo off
+                        powershell -NoProfile -Command "$env:DH_PASS.Trim() | docker login -u $env:DH_USER.Trim() --password-stdin"
                         docker push %IMAGE_NAME%:%IMAGE_TAG%
                         docker push %IMAGE_NAME%:latest
                         docker logout
@@ -92,11 +93,13 @@ pipeline {
             steps {
                 bat '''
                     @echo off
-                    echo Inspecting existing container image for rollback tracking...
+                    echo Cleaning up any previous local or environment containers on port %HOST_PORT%...
+                    docker stop tower-portal-local 2>nul || verify > nul
+                    docker rm -f tower-portal-local 2>nul || verify > nul
                     docker inspect --format="{{.Config.Image}}" %CONTAINER_NAME% > previous-image.txt 2>nul || echo None > previous-image.txt
                     echo Previous container image:
                     type previous-image.txt
-                    echo Stopping and removing old container if present...
+                    echo Stopping and removing %CONTAINER_NAME% if present...
                     docker stop %CONTAINER_NAME% 2>nul || verify > nul
                     docker rm -f %CONTAINER_NAME% 2>nul || verify > nul
                     echo Launching fresh container %CONTAINER_NAME% on host port %HOST_PORT%...
