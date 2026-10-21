@@ -1,0 +1,24 @@
+# --- Application identity ---
+app_name:        tower-portal
+app_user:        appuser
+app_group:       appuser
+app_base_dir:    /opt/tower-portal
+
+# --- Docker image ---
+docker_image:    vedanti17/telecom-tower-portal
+docker_tag:      latest
+container_name:  tower-portal-ansible
+host_port:       8085          # must not clash with 8080/8081/8082/8083/8084
+container_port:  8080
+
+# --- Spring / runtime env vars ---
+spring_profile:  prod
+db_url:          jdbc:h2:file:/opt/tower-portal/data/towerdb;DB_CLOSE_ON_EXIT=FALSE
+db_driver:       org.h2.Driver
+db_username:     sa
+db_password:     sa
+
+# --- Health-check ---
+healthcheck_url:  "http://localhost:{{ host_port }}/actuator/health"
+healthcheck_retries: 12
+healthcheck_delay:   5         # seconds between retries

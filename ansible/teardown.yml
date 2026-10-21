@@ -1,0 +1,22 @@
+---
+# ansible/teardown.yml  –  Remove container and clean up app directories
+- name: Tear down Telecom Tower Portal
+  hosts: tower_nodes
+  gather_facts: false
+
+  tasks:
+    - name: Stop and remove tower-portal container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: true
+
+    - name: Remove app base directory (optional – confirm with --extra-vars)
+      file:
+        path: "{{ app_base_dir }}"
+        state: absent
+      when: remove_data | default(false) | bool
+
+    - name: Report teardown complete
+      debug:
+        msg: "Container {{ container_name }} removed. Data preserved (pass -e remove_data=true to delete)."

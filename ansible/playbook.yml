@@ -1,0 +1,26 @@
+---
+# ansible/playbook.yml  –  Task 13: Idempotent provisioning of tower-portal
+- name: Provision and deploy Telecom Tower Portal
+  hosts: tower_nodes
+  gather_facts: true
+
+  pre_tasks:
+    - name: Display target host info
+      debug:
+        msg: >-
+          Provisioning {{ inventory_hostname }}
+          ({{ ansible_distribution }} {{ ansible_distribution_version }})
+          – image {{ docker_image }}:{{ docker_tag }}
+
+  roles:
+    - tower_portal
+
+  post_tasks:
+    - name: Print release history
+      command: cat {{ release_history_file }}
+      register: history
+      changed_when: false
+
+    - name: Show release history
+      debug:
+        msg: "{{ history.stdout_lines }}"

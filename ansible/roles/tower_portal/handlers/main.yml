@@ -1,0 +1,8 @@
+---
+# handlers/main.yml – triggered by notify directives
+
+- name: restart tower-portal container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    state: started
+    restart: true
