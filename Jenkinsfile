@@ -14,7 +14,6 @@ pipeline {
         )
     }
 
-    // WRITE IT HERE
     environment {
         TOMCAT_HOME = 'C:\\Program Files\\apache-tomcat-10.1.61'
     }
@@ -29,6 +28,18 @@ pipeline {
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                    archiveArtifacts artifacts: 'target/screenshots/*.png', allowEmptyArchive: true
+                }
             }
         }
 
@@ -48,10 +59,10 @@ pipeline {
 
     post {
         success {
-            echo "Deployed to ${params.ENVIRONMENT}"
+            echo "Pipeline succeeded! Successfully deployed to ${params.ENVIRONMENT} environment at http://localhost:8080/tower-portal-${params.ENVIRONMENT}"
         }
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline failed - deployment blocked'
         }
     }
 }
