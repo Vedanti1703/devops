@@ -21,16 +21,15 @@ ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC" \
 # 4. Set Application Working Directory inside the container
 WORKDIR /app
 
-# 5. Build Argument: Path to the packaged WAR artifact with default wildcard pattern
-ARG WAR_FILE=target/telecom-tower-maintenance-portal-*.war
-
-# 6. Copy the packaged WAR artifact from the host target directory into /app/app.war
-COPY ${WAR_FILE} /app/app.war
-
-# 7. Security Best Practice: Run container as a dedicated non-root user
-#    Creates a system group 'appgroup' and system user 'appuser', then sets ownership of /app
+# 5. Security Best Practice: Create non-root system user and group first
 RUN groupadd -r appgroup && useradd -r -g appgroup -d /app -s /sbin/nologin appuser \
     && chown -R appuser:appgroup /app
+
+# 6. Build Argument: Path to the packaged WAR artifact with default wildcard pattern
+ARG WAR_FILE=target/telecom-tower-maintenance-portal-*.war
+
+# 7. Copy the packaged WAR artifact directly with non-root ownership (avoids duplicate layers)
+COPY --chown=appuser:appgroup ${WAR_FILE} /app/app.war
 
 # 8. Switch to the non-root user
 USER appuser
