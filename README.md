@@ -1,8 +1,8 @@
 # Telecom Tower Maintenance Portal
 
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/Vedanti1703/devops/releases/tag/v1.0.0)
+[![Release](https://img.shields.io/badge/release-v2.0.0-blue.svg)](https://github.com/Vedanti1703/devops/releases/tag/v2.0.0)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Vedanti1703/devops)
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
 A **role-based web application** for managing telecom tower field maintenance operations — built with **Java 17, Spring Boot 3, Thymeleaf, Spring Security, and H2/MySQL**.
@@ -149,3 +149,29 @@ See the `/docs` folder for detailed documentation:
 - [Architecture & API Reference](docs/03-architecture.md)
 - [DevOps Lifecycle Diagram](docs/devops-lifecycle.md)
 - [Branch Policy](docs/branch-policy.md)
+- [Continuous Testing](docs/05-continuous-testing.md)
+- [Docker Lifecycle](docs/06-docker-lifecycle.md)
+- [Jenkins-Docker CD Pipeline](docs/07-jenkins-docker-cd.md)
+- [Configuration Specification](docs/08-configuration-specification.md)
+- [Provisioning & Reliability Guide](docs/09-provisioning-and-reliability.md)
+
+---
+
+## ✅ Completed Tasks (All 14)
+
+| # | Task | Status |
+|---|------|--------|
+| 1 | Agile project setup, GitHub repo, branching, Kanban | ✅ Done |
+| 2 | Problem definition, architecture, DevOps lifecycle docs | ✅ Done |
+| 3 | Spring Boot 3 app scaffold, Maven build, WAR packaging | ✅ Done |
+| 4 | H2/MySQL persistence, JPA entities, Flyway migrations | ✅ Done |
+| 5 | Spring Security RBAC (TECHNICIAN / SUPERVISOR / ADMIN) | ✅ Done |
+| 6 | Thymeleaf UI, Bootstrap 5, responsive layout | ✅ Done |
+| 7 | Tower record CRUD with field validation | ✅ Done |
+| 8 | Workflow state machine (PENDING→IN_PROGRESS→DONE→VERIFIED→CLOSED) | ✅ Done |
+| 9 | Executive KPI dashboard with charts | ✅ Done |
+| 10 | Selenium E2E test suite (login, CRUD, workflow, search) | ✅ Done |
+| 11 | Slim Docker image (eclipse-temurin:21-jre), non-root appuser | ✅ Done |
+| 12 | Jenkins CI/CD pipeline: build → push Docker Hub → deploy → health-check | ✅ Done |
+| 13 | Ansible idempotent provisioning: Docker, dirs, env, container, history | ✅ Done |
+| 14 | Ansible reliability validation: health assert, container assert | ✅ Done |

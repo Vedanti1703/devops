@@ -181,6 +181,8 @@
 | - | - | - | - | **TASK-16** (Continuous Testing in Jenkins — Task 10) ✅ |
 | - | - | - | - | **TASK-17** (Docker Containerization & Lifecycle — Task 11) ✅ |
 | - | - | - | - | **TASK-18** (Jenkins-Docker Continuous Deployment — Task 12) ✅ |
+| - | - | - | - | **TASK-19** (Ansible Config Management & Provisioning — Task 13) ✅ |
+| - | - | - | - | **TASK-20** (Ansible Reliability Validation & Rollback — Task 14) ✅ |
 
 ---
 
