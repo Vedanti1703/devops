@@ -115,7 +115,7 @@ pipeline {
                     set /a ATTEMPTS=0
                     :HEALTH_LOOP
                     set /a ATTEMPTS+=1
-                    echo [Health Check] Polling container on port %HOST_PORT% (attempt %ATTEMPTS% of 10)...
+                    echo [Health Check] Polling container on port %HOST_PORT% (attempt %ATTEMPTS% of 15)...
                     curl.exe -s -f http://localhost:%HOST_PORT%/actuator/health | findstr /I "UP" > nul
                     if %ERRORLEVEL% EQU 0 (
                         echo ==========================================================
@@ -126,15 +126,15 @@ pipeline {
                         echo ==========================================================
                         goto :HEALTH_SUCCESS
                     )
-                    if %ATTEMPTS% GEQ 10 (
+                    if %ATTEMPTS% GEQ 15 (
                         echo ==========================================================
-                        echo [ERROR] Container health check failed after 10 attempts!
+                        echo [ERROR] Container health check failed after 15 attempts!
                         echo Dumping container logs for %CONTAINER_NAME%:
                         docker logs %CONTAINER_NAME%
                         echo ==========================================================
                         exit /b 1
                     )
-                    timeout /t 3 /nobreak > nul
+                    powershell -NoProfile -Command "Start-Sleep -Seconds 4"
                     goto :HEALTH_LOOP
                     :HEALTH_SUCCESS
                 '''
