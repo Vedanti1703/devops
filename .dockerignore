@@ -1,0 +1,29 @@
+# Version control
+.git
+.gitignore
+
+# IDE & Editor settings
+.idea
+.vscode
+*.iml
+*.iws
+*.ipr
+
+# Documentation and project notes
+docs/
+*.md
+*.log
+logs/
+
+# Build artifacts: ignore everything in target EXCEPT the war files
+target/*
+!target/*.war
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Dependencies and scratch
+node_modules/
+scratch/
+tmp/
