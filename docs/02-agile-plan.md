@@ -154,10 +154,12 @@
 | **PB-08** | Executive KPI Summary Dashboard | Medium | 5 | Sprint 3 | **DONE** | TASK-13, TASK-14 |
 | **PB-09** | Selenium E2E Automated Test Suite | High | 8 | Sprint 3 | **DONE** | TASK-15 |
 | **PB-10** | Continuous Testing in Jenkins CI Pipeline | High | 5 | Sprint 3 | **DONE** | TASK-16 |
+| **PB-11** | Docker Containerization & Lifecycle Architecture | High | 5 | Sprint 3 | **DONE** | TASK-17 |
+| **PB-12** | Automated Jenkins-Docker Continuous Deployment Pipeline | High | 8 | Sprint 3 | **DONE** | TASK-18 |
 
 ---
 
-## 3. 14-Task Kanban Board (MVP v1.0.0 Finalized)
+## 3. DevOps Kanban Board (Tasks 1 through 12 Finalized)
 
 | Backlog | To Do | In Progress | Review | Done (Completed & Verified) |
 |---|---|---|---|---|
@@ -177,6 +179,8 @@
 | - | - | - | - | **TASK-14** (Test Suite & Tag v1.0.0) |
 | - | - | - | - | **TASK-15** (Selenium E2E Test Suite — Task 9) ✅ |
 | - | - | - | - | **TASK-16** (Continuous Testing in Jenkins — Task 10) ✅ |
+| - | - | - | - | **TASK-17** (Docker Containerization & Lifecycle — Task 11) ✅ |
+| - | - | - | - | **TASK-18** (Jenkins-Docker Continuous Deployment — Task 12) ✅ |
 
 ---
 
@@ -203,7 +207,7 @@ gantt
 ### Sprint Breakdown
 - **Sprint 1: Architecture, Data & Security Foundation (Tasks 1–7)** &mdash; Completed
 - **Sprint 2: Record Operations & State Transition Workflow (Tasks 8–12)** &mdash; Completed
-- **Sprint 3: Dashboard, Filtering, Automation & Release (Tasks 13–16)** &mdash; Completed ✅ *(Includes Task 9: Selenium E2E & Task 10: CI/CD Pipeline Gating)*
+- **Sprint 3: Dashboard, Filtering, Automation & Release (Tasks 13–18)** &mdash; Completed ✅ *(Includes Task 9: Selenium E2E, Task 10: Jenkins CI Gating, Task 11: Docker Lifecycle, and Task 12: Continuous Deployment Pipeline)*
 
 ---
 

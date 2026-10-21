@@ -1,7 +1,7 @@
 # Project Execution & Verification Evidence Log
 
 **Project:** Telecom Tower Maintenance Portal  
-**Target:** Tasks 1 to 10 Execution Evidence  
+**Target:** Tasks 1 to 12 Execution Evidence  
 
 ---
 
@@ -317,6 +317,110 @@
 | 5 | Jenkins **archived screenshots** — `target/screenshots/*.png` artifacts panel | Jenkins → Build → Artifacts |
 | 6 | Terminal — `mvn clean test` output with `Tests run: 21, Failures: 0, Errors: 0` | PowerShell locally |
 | 7 | GitHub PR #15 merged — Jenkinsfile Test stage addition | https://github.com/Vedanti1703/devops/pull/15 |
-| 8 | GitHub PR #16 merged — deliberate defect | https://github.com/Vedanti1703/devops/pull/16 |
-| 9 | GitHub PR #17 merged — defect fix | https://github.com/Vedanti1703/devops/pull/17 |
 
+---
+
+## Task 11: Docker Image and Container Lifecycle
+
+- **Status:** COMPLETED
+- **Branch:** `feature/dockerfile` → merged to `develop` via [PR #18](https://github.com/Vedanti1703/devops/pull/18)
+- **Deliverables:**
+  - `Dockerfile` — based on `eclipse-temurin:21-jre`, unprivileged user `appuser:appgroup`, `COPY --chown`, health check against `/actuator/health`, `EXPOSE 8080`, and exec-form `ENTRYPOINT`
+  - `.dockerignore` — excludes `.git`, IDE caches, docs, build caches, and test artifacts while preserving `target/*.war`
+  - [`docs/06-docker-lifecycle.md`](file:///c:/Users/Vedanti/OneDrive/Desktop/devops%20project/docs/06-docker-lifecycle.md) — complete container architecture guide, line-by-line Dockerfile walkthrough, Mermaid lifecycle diagram, and execution log
+- **Commits:**
+  | Commit | Message |
+  |---|---|
+  | `5f03320` | `feat: add Dockerfile` |
+  | `73559d8` | `chore: add dockerignore` |
+  | `0a86967` | `refactor(docker): optimize layers with COPY --chown` |
+  | `69b8c8c` | `docs: add docker lifecycle log` |
+  | `ddae035` | Merge PR #18 into `develop` |
+- **Key Commands & Real Outputs:**
+  ```powershell
+  # 1. Build and Tag
+  docker build -t vedanti17/telecom-tower-portal:1.0.0 -t vedanti17/telecom-tower-portal:latest .
+  # Content size: 220MB, 9 layers, ExposedPorts: {"8080/tcp":{}}
+
+  # 2. Run Container (Host port 8084)
+  docker run -d --name tower-portal-local -p 8084:8080 vedanti17/telecom-tower-portal:1.0.0
+  # Output: df39afefbd8f... Up 29 seconds (healthy)
+
+  # 3. Security & Non-Root Execution
+  docker exec tower-portal-local whoami
+  # Output: appuser
+
+  # 4. Health Check
+  curl.exe -s http://localhost:8084/actuator/health
+  # Output: {"status":"UP","components":{"db":{"status":"UP"},"diskSpace":{"status":"UP"},"ping":{"status":"UP"}}}
+
+  # 5. Full Lifecycle Tested
+  docker stop tower-portal-local
+  docker ps -a --filter "name=tower-portal-local" # Exited (143)
+  docker start tower-portal-local
+  docker restart tower-portal-local
+  docker stop tower-portal-local
+  docker rm tower-portal-local
+  docker tag vedanti17/telecom-tower-portal:1.0.0 vedanti17/telecom-tower-portal:temp-tag
+  docker rmi vedanti17/telecom-tower-portal:temp-tag
+  ```
+
+---
+
+## Task 12: Jenkins-Docker Continuous Deployment Pipeline
+
+- **Status:** COMPLETED
+- **Branch:** `feature/jenkins-docker` → merged to `develop` via [PR #19](https://github.com/Vedanti1703/devops/pull/19)
+- **Continuous Deployment Verification Branch:** `feature/footer-change` → merged to `develop` via [PR #20](https://github.com/Vedanti1703/devops/pull/20)
+- **Deliverables:**
+  - `Jenkinsfile` — automated pipeline with stages: Checkout, Build, Test (Quality Gate), Package (with `build-info.txt`), Docker Build, Docker Push (with credentials & stdin piping), Deploy Container (with previous image tracking), Health Check (PowerShell loop polling `/actuator/health`), and optional Tomcat deploy toggle
+  - [`docs/07-jenkins-docker-cd.md`](file:///c:/Users/Vedanti/OneDrive/Desktop/devops%20project/docs/07-jenkins-docker-cd.md) — CD pipeline architecture, tagging strategy, credential security, rollback guide, and Mermaid flowchart
+- **Commits:**
+  | Commit | Message |
+  |---|---|
+  | `626c663` | `ci: build and push versioned docker image` |
+  | `40a5ea6` | `ci: deploy container and health check` |
+  | `0f62f66` | `docs: add jenkins docker cd documentation` |
+  | `9a1a1fb` | Merge PR #19 into `develop` |
+  | `5beddad` | `feat(ui): update footer text to prove continuous container deployment` |
+  | `80260c6` | Merge PR #20 into `develop` |
+  | `c8dbffc` | `fix(ci): robust docker login with trimmed credentials and port 8084 cleanup` |
+  | `da40ffe` | `fix(ci): use PowerShell Start-Sleep in health check loop to avoid timeout input redirection error` |
+
+### Docker Hub Image Tags Published
+
+Repository: **`vedanti17/telecom-tower-portal`**  
+URL: https://hub.docker.com/r/vedanti17/telecom-tower-portal/tags
+
+| Tag | Build Type | Image ID | Description |
+|---|---|---|---|
+| `1.0.0` | Manual Task 11 Build | `0fcb7ead255a` | Baseline containerized MVP image |
+| `1.0.5` | Jenkins CD Build #5 | `8461d0285aa4` | Initial pipeline build |
+| `1.0.6` | Jenkins CD Build #6 | `a1a77407355b` | PR #20 footer update container image |
+| `1.0.7` | Jenkins CD Build #7 | `b48b396e823f` | Final successful end-to-end automated CD build |
+| `latest` | Mutable Pointer | `b48b396e823f` | Points to latest successful build (`1.0.7`) |
+
+### Pipeline Runs Summary (Continuous Deployment)
+
+| Run / Build # | Status | Trigger | Key Stages Verified | Deployment Outcome |
+|:---:|:---:|:---:|---|---|
+| **Build #5** | ❌ FAILED | PR #19 merge | Checkout, Build, Test (21 tests pass), Package, Docker Build | Docker Push failed due to whitespace in stdin piping; container deploy blocked by port 8084 collision with `tower-portal-local`. |
+| **Build #6** | ❌ FAILED | PR #20 merge | Checkout, Build, Test, Package, Docker Build, Deploy Container | Container deployed successfully on port 8084! Health check loop failed because Windows Service cannot execute `timeout.exe` with redirected input. |
+| **Build #7** | ✅ SUCCESS | Commit `da40ffe` | All 8 Stages Green: Checkout $\to$ Build $\to$ Test $\to$ Package $\to$ Docker Build $\to$ Docker Push $\to$ Deploy Container $\to$ Health Check | **SUCCESS:** Pushed `1.0.7` and `latest` to Docker Hub; deployed `tower-portal-dev` to `http://localhost:8084` with health check verified 200 OK (`{"status":"UP"}`). |
+
+---
+
+## Final Screenshot Checklist for Tasks 11 & 12
+
+| # | Item to Capture | Where to Capture / Source |
+|:---:|---|---|
+| 1 | Terminal: `docker images` | Showing `vedanti17/telecom-tower-portal` tags (`1.0.0`, `1.0.7`, `latest`) |
+| 2 | Terminal: `docker ps` | Showing `tower-portal-dev` Up and `(healthy)` on `0.0.0.0:8084->8080/tcp` |
+| 3 | Browser: App Login & Dashboard | Navigate to `http://localhost:8084` (login as `admin` / `admin123`) showing footer: *"Automated Docker CD Pipeline v2 Active"* |
+| 4 | Browser: Health Check | Navigate to `http://localhost:8084/actuator/health` showing `{"status":"UP", ...}` |
+| 5 | Docker Hub Tags Page | https://hub.docker.com/r/vedanti17/telecom-tower-portal/tags showing versioned tags and `latest` |
+| 6 | Jenkins Stage View (Build #7) | All stages GREEN (`Checkout`, `Build`, `Test`, `Package`, `Docker Build`, `Docker Push`, `Deploy Container`, `Health Check`) |
+| 7 | Jenkins Console Output | Showing successful Docker Push and Health Check completion on Build #7 |
+| 8 | GitHub PR #18 (Merged) | https://github.com/Vedanti1703/devops/pull/18 |
+| 9 | GitHub PR #19 (Merged) | https://github.com/Vedanti1703/devops/pull/19 |
+| 10 | GitHub PR #20 (Merged) | https://github.com/Vedanti1703/devops/pull/20 |
