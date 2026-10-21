@@ -30,21 +30,34 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
 
     private String createRecordAndGetDetailUrl() {
         getDriver().get(baseUrl("/records/new"));
-        wait.until(ExpectedConditions.urlContains("/records/new"));
+        // Wait for the form to be rendered (more reliable than urlContains)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-create-record")));
 
-        getDriver().findElement(By.id("input-tower-id")).sendKeys(TOWER_ID);
-        getDriver().findElement(By.id("input-location")).sendKeys("Workflow Test Site");
+        WebElement towerIdInput = getDriver().findElement(By.id("input-tower-id"));
+        towerIdInput.clear();
+        towerIdInput.sendKeys(TOWER_ID);
+
+        WebElement locationInput = getDriver().findElement(By.id("input-location"));
+        locationInput.clear();
+        locationInput.sendKeys("Workflow Test Site");
+
         new Select(getDriver().findElement(By.id("select-issue-type")))
                 .selectByValue("FIBER_CUT");
         new Select(getDriver().findElement(By.id("select-priority")))
                 .selectByValue("CRITICAL");
-        getDriver().findElement(By.id("input-assigned-tech")).sendKeys("tech1");
-        getDriver().findElement(By.id("input-description"))
-                .sendKeys("Workflow Selenium test – fiber cut simulation.");
+
+        WebElement techInput = getDriver().findElement(By.id("input-assigned-tech"));
+        techInput.clear();
+        techInput.sendKeys("tech1");
+
+        WebElement descInput = getDriver().findElement(By.id("input-description"));
+        descInput.clear();
+        descInput.sendKeys("Workflow Selenium test - fiber cut simulation.");
+
         getDriver().findElement(By.id("btn-submit-record")).click();
 
-        // After save we're back on /records – find the row for our tower and click View
-        wait.until(ExpectedConditions.urlContains("/records"));
+        // Wait for the records list to reload after successful save
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
 
         // Search for the newly created record to get its detail URL
         WebElement kwInput = wait.until(

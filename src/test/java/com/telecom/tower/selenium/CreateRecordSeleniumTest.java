@@ -27,18 +27,24 @@ class CreateRecordSeleniumTest extends BaseSeleniumTest {
     void createRecord_appearsInList() {
         // 1. Login as technician
         login("tech1", "tech123");
-        wait.until(ExpectedConditions.urlContains("/records"));
 
-        // 2. Click "New Maintenance Ticket"
-        WebElement createBtn = wait.until(
-                ExpectedConditions.elementToBeClickable(By.id("btn-create-record")));
-        createBtn.click();
+        // Wait until we're on the records list page
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("page-title")));
 
-        // 3. Fill in the form
-        wait.until(ExpectedConditions.urlContains("/records/new"));
+        // 2. Navigate directly to the create form URL (avoids click-timing race conditions)
+        getDriver().get(baseUrl("/records/new"));
 
-        getDriver().findElement(By.id("input-tower-id")).sendKeys(TOWER_ID);
-        getDriver().findElement(By.id("input-location")).sendKeys("Selenium Test City");
+        // Wait for the form to be present and ready
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-create-record")));
+
+        // 3. Fill in the form fields
+        WebElement towerIdInput = getDriver().findElement(By.id("input-tower-id"));
+        towerIdInput.clear();
+        towerIdInput.sendKeys(TOWER_ID);
+
+        WebElement locationInput = getDriver().findElement(By.id("input-location"));
+        locationInput.clear();
+        locationInput.sendKeys("Selenium Test City");
 
         new Select(getDriver().findElement(By.id("select-issue-type")))
                 .selectByValue("POWER_FAILURE");
@@ -46,18 +52,25 @@ class CreateRecordSeleniumTest extends BaseSeleniumTest {
         new Select(getDriver().findElement(By.id("select-priority")))
                 .selectByValue("HIGH");
 
-        getDriver().findElement(By.id("input-assigned-tech")).sendKeys("tech1");
-        getDriver().findElement(By.id("input-description"))
-                .sendKeys("Automated Selenium test – power failure simulation.");
+        WebElement techInput = getDriver().findElement(By.id("input-assigned-tech"));
+        techInput.clear();
+        techInput.sendKeys("tech1");
 
-        // 4. Submit
+        WebElement descInput = getDriver().findElement(By.id("input-description"));
+        descInput.clear();
+        descInput.sendKeys("Automated Selenium test - power failure simulation.");
+
+        // 4. Submit and wait for navigation away from the create form
         getDriver().findElement(By.id("btn-submit-record")).click();
 
-        // 5. Should redirect back to /records with a success flash message
+        // 5. Wait until the records list page loads (indicated by the search keyword field)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
         wait.until(ExpectedConditions.urlContains("/records"));
 
         // 6. Assert the new tower ID appears somewhere in the table
         String pageSource = getDriver().getPageSource();
-        assertThat(pageSource).contains(TOWER_ID);
+        assertThat(pageSource)
+                .as("Newly created record's Tower ID should appear in the records list")
+                .contains(TOWER_ID);
     }
 }

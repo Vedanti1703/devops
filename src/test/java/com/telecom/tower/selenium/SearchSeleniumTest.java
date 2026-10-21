@@ -30,20 +30,29 @@ class SearchSeleniumTest extends BaseSeleniumTest {
 
     private void createSearchRecord() {
         getDriver().get(baseUrl("/records/new"));
-        wait.until(ExpectedConditions.urlContains("/records/new"));
+        // Wait for the form to be rendered (more reliable than urlContains)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-create-record")));
 
-        getDriver().findElement(By.id("input-tower-id")).sendKeys(TOWER_ID);
-        getDriver().findElement(By.id("input-location")).sendKeys("Search Test Location");
+        WebElement towerIdInput = getDriver().findElement(By.id("input-tower-id"));
+        towerIdInput.clear();
+        towerIdInput.sendKeys(TOWER_ID);
+        WebElement locationInput = getDriver().findElement(By.id("input-location"));
+        locationInput.clear();
+        locationInput.sendKeys("Search Test Location");
         new Select(getDriver().findElement(By.id("select-issue-type")))
                 .selectByValue("ANTENNA_MISALIGNMENT");
         new Select(getDriver().findElement(By.id("select-priority")))
                 .selectByValue("MEDIUM");
-        getDriver().findElement(By.id("input-assigned-tech")).sendKeys("tech1");
-        getDriver().findElement(By.id("input-description"))
-                .sendKeys("Record created for search Selenium test.");
+        WebElement techInput = getDriver().findElement(By.id("input-assigned-tech"));
+        techInput.clear();
+        techInput.sendKeys("tech1");
+        WebElement descInput = getDriver().findElement(By.id("input-description"));
+        descInput.clear();
+        descInput.sendKeys("Record created for search Selenium test.");
         getDriver().findElement(By.id("btn-submit-record")).click();
 
-        wait.until(ExpectedConditions.urlContains("/records"));
+        // Wait for records list to load after successful save
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
     }
 
     // -----------------------------------------------------------------------

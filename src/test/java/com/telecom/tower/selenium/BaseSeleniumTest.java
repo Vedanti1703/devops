@@ -49,8 +49,10 @@ public abstract class BaseSeleniumTest {
         options.addArguments("--window-size=1920,1080");
 
         driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(6));
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        // Set implicit wait to 0 – mixing implicit and explicit waits causes races.
+        // All synchronisation is done via explicit WebDriverWait below.
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(0));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     @AfterEach
@@ -91,14 +93,14 @@ public abstract class BaseSeleniumTest {
         usernameInput.clear();
         usernameInput.sendKeys(username);
 
-        WebElement passwordInput = driver.findElement(By.id("input-password"));
+        WebElement passwordInput = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.id("input-password")));
         passwordInput.clear();
         passwordInput.sendKeys(password);
 
         driver.findElement(By.id("btn-login-submit")).click();
 
-        // Wait until we leave the login page
-        wait.until(ExpectedConditions.not(
-                ExpectedConditions.urlContains("/login")));
+        // Wait until we navigate away from the login page entirely
+        wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
     }
 }
