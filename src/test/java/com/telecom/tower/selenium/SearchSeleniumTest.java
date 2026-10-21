@@ -33,23 +33,15 @@ class SearchSeleniumTest extends BaseSeleniumTest {
         // Wait for the form to be rendered (more reliable than urlContains)
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-create-record")));
 
-        WebElement towerIdInput = getDriver().findElement(By.id("input-tower-id"));
-        towerIdInput.clear();
-        towerIdInput.sendKeys(TOWER_ID);
-        WebElement locationInput = getDriver().findElement(By.id("input-location"));
-        locationInput.clear();
-        locationInput.sendKeys("Search Test Location");
+        setInputValue("input-tower-id", TOWER_ID);
+        setInputValue("input-location", "Search Test Location");
         new Select(getDriver().findElement(By.id("select-issue-type")))
                 .selectByValue("ANTENNA_MISALIGNMENT");
         new Select(getDriver().findElement(By.id("select-priority")))
                 .selectByValue("MEDIUM");
-        WebElement techInput = getDriver().findElement(By.id("input-assigned-tech"));
-        techInput.clear();
-        techInput.sendKeys("tech1");
-        WebElement descInput = getDriver().findElement(By.id("input-description"));
-        descInput.clear();
-        descInput.sendKeys("Record created for search Selenium test.");
-        getDriver().findElement(By.id("btn-submit-record")).click();
+        setInputValue("input-assigned-tech", "tech1");
+        setInputValue("input-description", "Record created for search Selenium test.");
+        jsSubmitForm("form-create-record");
 
         // Wait for records list to load after successful save
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
@@ -69,12 +61,8 @@ class SearchSeleniumTest extends BaseSeleniumTest {
         createSearchRecord();
 
         // Type the unique tower ID in the keyword search box
-        WebElement keywordInput = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
-        keywordInput.clear();
-        keywordInput.sendKeys(TOWER_ID);
-
-        getDriver().findElement(By.id("btn-search-filter")).click();
+        setInputValue("input-search-keyword", TOWER_ID);
+        jsSubmitForm("form-search-filter");
 
         // Wait for results to reload
         wait.until(ExpectedConditions.urlContains("keyword="));
@@ -94,12 +82,8 @@ class SearchSeleniumTest extends BaseSeleniumTest {
         login("tech1", "tech123");
         wait.until(ExpectedConditions.urlContains("/records"));
 
-        WebElement keywordInput = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
-        keywordInput.clear();
-        keywordInput.sendKeys("TWR-NONEXISTENT-99999");
-
-        getDriver().findElement(By.id("btn-search-filter")).click();
+        setInputValue("input-search-keyword", "TWR-NONEXISTENT-99999");
+        jsSubmitForm("form-search-filter");
         wait.until(ExpectedConditions.urlContains("keyword="));
 
         WebElement noRow = wait.until(

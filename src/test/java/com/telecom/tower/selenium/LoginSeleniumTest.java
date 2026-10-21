@@ -37,11 +37,9 @@ class LoginSeleniumTest extends BaseSeleniumTest {
     void invalidLogin_showsErrorAlert() {
         getDriver().get(baseUrl("/login"));
 
-        WebElement usernameInput = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.id("input-username")));
-        usernameInput.sendKeys("bad_user");
-        getDriver().findElement(By.id("input-password")).sendKeys("wrong_pass");
-        getDriver().findElement(By.id("btn-login-submit")).click();
+        setInputValue("input-username", "bad_user");
+        setInputValue("input-password", "wrong_pass");
+        jsSubmitForm("form-login");
 
         // Spring Security appends ?error on failure → failureUrl("/login?error=true")
         wait.until(ExpectedConditions.urlContains("/login"));

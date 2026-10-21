@@ -33,38 +33,25 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
         // Wait for the form to be rendered (more reliable than urlContains)
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-create-record")));
 
-        WebElement towerIdInput = getDriver().findElement(By.id("input-tower-id"));
-        towerIdInput.clear();
-        towerIdInput.sendKeys(TOWER_ID);
-
-        WebElement locationInput = getDriver().findElement(By.id("input-location"));
-        locationInput.clear();
-        locationInput.sendKeys("Workflow Test Site");
+        setInputValue("input-tower-id", TOWER_ID);
+        setInputValue("input-location", "Workflow Test Site");
 
         new Select(getDriver().findElement(By.id("select-issue-type")))
                 .selectByValue("FIBER_CUT");
         new Select(getDriver().findElement(By.id("select-priority")))
                 .selectByValue("CRITICAL");
 
-        WebElement techInput = getDriver().findElement(By.id("input-assigned-tech"));
-        techInput.clear();
-        techInput.sendKeys("tech1");
+        setInputValue("input-assigned-tech", "tech1");
+        setInputValue("input-description", "Workflow Selenium test - fiber cut simulation.");
 
-        WebElement descInput = getDriver().findElement(By.id("input-description"));
-        descInput.clear();
-        descInput.sendKeys("Workflow Selenium test - fiber cut simulation.");
-
-        getDriver().findElement(By.id("btn-submit-record")).click();
+        jsSubmitForm("form-create-record");
 
         // Wait for the records list to reload after successful save
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
 
         // Search for the newly created record to get its detail URL
-        WebElement kwInput = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
-        kwInput.clear();
-        kwInput.sendKeys(TOWER_ID);
-        getDriver().findElement(By.id("btn-search-filter")).click();
+        setInputValue("input-search-keyword", TOWER_ID);
+        jsSubmitForm("form-search-filter");
         wait.until(ExpectedConditions.urlContains("keyword="));
 
         // Click the first "View" button in the results table
@@ -72,7 +59,7 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
                 ExpectedConditions.elementToBeClickable(
                         By.cssSelector("#tbody-records a.btn-outline-primary")));
         String detailUrl = viewBtn.getAttribute("href");
-        viewBtn.click();
+        jsClick(viewBtn);
         wait.until(ExpectedConditions.urlContains("/records/"));
         return detailUrl;
     }
@@ -98,7 +85,7 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
         // ── Step 2: tech1 clicks "Start Work" → IN_PROGRESS ───────────────
         WebElement startBtn = wait.until(
                 ExpectedConditions.elementToBeClickable(By.id("btn-start-work")));
-        startBtn.click();
+        jsClick(startBtn);
 
         wait.until(ExpectedConditions.textToBePresentInElementLocated(
                 By.id("detail-status"), "IN_PROGRESS"));
@@ -109,7 +96,7 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
         WebElement completeBtn = wait.until(
                 ExpectedConditions.elementToBeClickable(By.id("btn-complete-work")));
         String currentDetailUrl = getDriver().getCurrentUrl();
-        completeBtn.click();
+        jsClick(completeBtn);
 
         wait.until(ExpectedConditions.textToBePresentInElementLocated(
                 By.id("detail-status"), "COMPLETED"));
@@ -130,7 +117,7 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
         // ── Step 5: sup1 verifies work → VERIFIED ────────────────────────
         WebElement verifyBtn = wait.until(
                 ExpectedConditions.elementToBeClickable(By.id("btn-approve-verify")));
-        verifyBtn.click();
+        jsClick(verifyBtn);
 
         wait.until(ExpectedConditions.textToBePresentInElementLocated(
                 By.id("detail-status"), "VERIFIED"));
@@ -151,7 +138,7 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
         // ── Step 7: admin closes ticket → CLOSED ─────────────────────────
         WebElement closeBtn = wait.until(
                 ExpectedConditions.elementToBeClickable(By.id("btn-close-record")));
-        closeBtn.click();
+        jsClick(closeBtn);
 
         wait.until(ExpectedConditions.textToBePresentInElementLocated(
                 By.id("detail-status"), "CLOSED"));
@@ -188,7 +175,7 @@ class WorkflowDashboardSeleniumTest extends BaseSeleniumTest {
         // "View All Records" navigation button must be clickable
         WebElement navBtn = getDriver().findElement(By.id("btn-dashboard-to-records"));
         assertThat(navBtn.isDisplayed()).isTrue();
-        navBtn.click();
+        jsClick(navBtn);
         wait.until(ExpectedConditions.urlContains("/records"));
     }
 }

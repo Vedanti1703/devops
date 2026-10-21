@@ -38,13 +38,8 @@ class CreateRecordSeleniumTest extends BaseSeleniumTest {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-create-record")));
 
         // 3. Fill in the form fields
-        WebElement towerIdInput = getDriver().findElement(By.id("input-tower-id"));
-        towerIdInput.clear();
-        towerIdInput.sendKeys(TOWER_ID);
-
-        WebElement locationInput = getDriver().findElement(By.id("input-location"));
-        locationInput.clear();
-        locationInput.sendKeys("Selenium Test City");
+        setInputValue("input-tower-id", TOWER_ID);
+        setInputValue("input-location", "Selenium Test City");
 
         new Select(getDriver().findElement(By.id("select-issue-type")))
                 .selectByValue("POWER_FAILURE");
@@ -52,16 +47,11 @@ class CreateRecordSeleniumTest extends BaseSeleniumTest {
         new Select(getDriver().findElement(By.id("select-priority")))
                 .selectByValue("HIGH");
 
-        WebElement techInput = getDriver().findElement(By.id("input-assigned-tech"));
-        techInput.clear();
-        techInput.sendKeys("tech1");
+        setInputValue("input-assigned-tech", "tech1");
+        setInputValue("input-description", "Automated Selenium test - power failure simulation.");
 
-        WebElement descInput = getDriver().findElement(By.id("input-description"));
-        descInput.clear();
-        descInput.sendKeys("Automated Selenium test - power failure simulation.");
-
-        // 4. Submit and wait for navigation away from the create form
-        getDriver().findElement(By.id("btn-submit-record")).click();
+        // 4. Submit form via JS submit to ensure reliable form submission in headless Chrome
+        jsSubmitForm("form-create-record");
 
         // 5. Wait until the records list page loads (indicated by the search keyword field)
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input-search-keyword")));
