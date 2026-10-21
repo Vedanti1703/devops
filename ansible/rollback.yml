@@ -1,0 +1,59 @@
+---
+# ansible/rollback.yml  –  Roll back to a previous image tag
+# Usage: ansible-playbook rollback.yml -e "rollback_tag=1.0.5"
+- name: Rollback tower-portal to a previous image tag
+  hosts: tower_nodes
+  gather_facts: true
+
+  vars:
+    rollback_tag: "{{ rollback_tag | mandatory }}"
+
+  tasks:
+    - name: Pull rollback image
+      community.docker.docker_image:
+        name: "{{ docker_image }}"
+        tag: "{{ rollback_tag }}"
+        source: pull
+
+    - name: Replace container with rollback image
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}:{{ rollback_tag }}"
+        state: started
+        restart_policy: "{{ docker_restart_policy }}"
+        ports:
+          - "{{ host_port }}:{{ container_port }}"
+        env_file: "{{ app_base_dir }}/config/app.env"
+        volumes:
+          - "{{ app_base_dir }}/data:/app/data"
+          - "{{ app_base_dir }}/logs:/app/logs"
+        force_kill: true
+        recreate: true
+
+    - name: Record rollback in history
+      lineinfile:
+        path: "{{ release_history_file }}"
+        line: >-
+          {{ ansible_date_time.iso8601 }}  ROLLBACK to
+          {{ docker_image }}:{{ rollback_tag }}
+        create: true
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: "0644"
+
+    - name: Poll health after rollback
+      uri:
+        url: "{{ healthcheck_url }}"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health
+      until: >-
+        health.status == 200 and
+        (health.json.status | default('')) == 'UP'
+      retries: 12
+      delay: 5
+
+    - name: Show rollback health result
+      debug:
+        msg: "✅ Rollback to {{ rollback_tag }} healthy: {{ health.json }}"

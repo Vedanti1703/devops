@@ -1,0 +1,3 @@
+# Role defaults – lowest priority; override via group_vars or extra-vars
+docker_restart_policy: unless-stopped
+release_history_file:  "{{ app_base_dir }}/releases/history.txt"

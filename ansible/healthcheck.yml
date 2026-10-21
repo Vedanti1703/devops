@@ -1,0 +1,47 @@
+---
+# ansible/healthcheck.yml  –  Task 14: Reliability validation (standalone run)
+- name: Health-check and reliability validation
+  hosts: tower_nodes
+  gather_facts: false
+  become: false
+
+  vars:
+    hc_retries: 6
+    hc_delay: 5
+
+  tasks:
+    - name: Poll /actuator/health until UP
+      uri:
+        url: "http://localhost:{{ host_port }}/actuator/health"
+        method: GET
+        return_content: true
+        status_code: 200
+      register: health
+      until: >-
+        health.status == 200 and
+        (health.json.status | default('')) == 'UP'
+      retries: "{{ hc_retries }}"
+      delay: "{{ hc_delay }}"
+
+    - name: Assert application status is UP
+      assert:
+        that:
+          - health.json.status == 'UP'
+        success_msg: "✅ Application is UP and healthy"
+        fail_msg:    "❌ Application health check FAILED: {{ health.json }}"
+
+    - name: Check container is running
+      command: docker ps --filter "name={{ container_name }}" --format "{{ '{{' }}.Status{{ '}}' }}"
+      register: cstatus
+      changed_when: false
+
+    - name: Assert container is running
+      assert:
+        that:
+          - "'Up' in cstatus.stdout"
+        success_msg: "✅ Container {{ container_name }} is running"
+        fail_msg:    "❌ Container {{ container_name }} is NOT running: {{ cstatus.stdout }}"
+
+    - name: Show full health payload
+      debug:
+        msg: "{{ health.json }}"
