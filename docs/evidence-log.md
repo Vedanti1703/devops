@@ -1,7 +1,7 @@
 # Project Execution & Verification Evidence Log
 
 **Project:** Telecom Tower Maintenance Portal  
-**Target:** Tasks 1 to 6 Execution Evidence  
+**Target:** Tasks 1 to 10 Execution Evidence  
 
 ---
 
@@ -160,4 +160,163 @@
   - Screenshot of Dashboard page (`http://localhost:8081/dashboard`) showing KPI cards.
 
 
+---
+
+## Task 9: Selenium E2E Test Suite
+
+- **Status:** COMPLETED
+- **Branch:** `feature/selenium-tests` → merged to `develop` via [PR #14](https://github.com/Vedanti1703/devops/pull/14)
+- **Deliverables:**
+  - `src/test/java/com/telecom/tower/selenium/BaseSeleniumTest.java` — headless Chrome, `@SpringBootTest(RANDOM_PORT)`, helpers `login()` and `baseUrl()`
+  - `src/test/java/com/telecom/tower/selenium/ScreenshotOnFailureExtension.java` — JUnit 5 `AfterTestExecutionCallback` saves PNG to `target/screenshots/<testName>.png` before `@AfterEach` quits the driver
+  - `LoginSeleniumTest.java`, `CreateRecordSeleniumTest.java`, `SearchSeleniumTest.java`, `WorkflowDashboardSeleniumTest.java`
+- **Selenium dependency added to pom.xml (test scope):**
+  ```xml
+  <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>4.x</version>
+      <scope>test</scope>
+  </dependency>
+  ```
+- **Commands Executed:**
+  ```powershell
+  git checkout develop
+  git checkout -b feature/selenium-tests
+  # ... code authoring ...
+  mvn clean test
+  git add -A
+  git commit -m "test(selenium): add Selenium E2E tests for Task 9"
+  git push origin feature/selenium-tests
+  gh pr create --base develop --head feature/selenium-tests --title "Task 9: Selenium E2E Tests"
+  gh pr merge 14 --squash   # (series of fix commits then merge)
+  ```
+- **Fix Commits (in branch, squashed on merge):**
+  | Commit | Message |
+  |--------|---------|
+  | `c8d86de` | `test(selenium): add Selenium E2E tests for Task 9` |
+  | `40d5531` | `fix(selenium): screenshot extension fires before driver quit` |
+  | `cc2e8b9` | `fix(selenium): robust form-wait and in-memory H2 for tests` |
+  | `940d472` | `fix(selenium): reliable form submit and input filling via JS in headless Chrome` |
+  | `8f0e65b` | Merge commit — PR #14 into `develop` |
+- **Final Test Result:** 21 tests pass, 0 failures, 0 errors (`BUILD SUCCESS`)
+- **Key Bugs Fixed:**
+  1. Screenshot extension reordered to `AfterTestExecutionCallback` (runs before `@AfterEach` driver quit)
+  2. Form submit switched to JS executor for reliable headless Chrome interaction
+  3. Test database isolated with in-memory H2 profile so Tomcat data never leaks
+- **Manual Screenshots Required:**
+  - Jenkins / terminal screenshot of `mvn clean test` → **21 tests, 0 failures** summary line
+  - Example screenshot from `target/screenshots/` (any failure PNG captured during development)
+
+---
+
+## Task 10: Continuous Testing in Jenkins
+
+- **Status:** COMPLETED
+- **Documentation:** [`docs/05-continuous-testing.md`](file:///c:/Users/Vedanti/OneDrive/Desktop/devops%20project/docs/05-continuous-testing.md)
+
+### Part 1 — Jenkinsfile Test Stage (PR #15)
+
+- **Branch:** `feature/jenkins-testing` → merged to `develop` via [PR #15](https://github.com/Vedanti1703/devops/pull/15)
+- **Commits:**
+  | Commit | Message |
+  |--------|---------|
+  | `44fd6af` | `ci: add selenium test stage to Jenkinsfile` |
+  | `1c71c3b` | `docs: add continuous testing documentation` |
+  | `9ced854` | Merge commit — PR #15 into `develop` |
+- **Jenkinsfile change added (Test stage):**
+  ```groovy
+  stage('Test') {
+      steps {
+          bat 'mvn test'
+      }
+      post {
+          always {
+              junit 'target/surefire-reports/*.xml'
+              archiveArtifacts artifacts: 'target/screenshots/*.png', allowEmptyArchive: true
+          }
+      }
+  }
+  ```
+- **Commands Executed:**
+  ```powershell
+  git checkout develop; git checkout -b feature/jenkins-testing
+  # edited Jenkinsfile
+  git add Jenkinsfile docs/05-continuous-testing.md
+  git commit -m "ci: add selenium test stage to Jenkinsfile"
+  git push origin feature/jenkins-testing
+  gh pr create --base develop --head feature/jenkins-testing --title "Task 10 Part 1: CI Test Stage"
+  gh pr merge 15 --merge
+  git checkout develop; git pull
+  ```
+- **Pipeline Run 1 — GREEN ✅:** All 21 tests passed; Package and Deploy ran successfully; WAR deployed to Tomcat.
+
+### Part 2 — Deliberate Defect (PR #16)
+
+- **Branch:** `bugfix/intentional-defect` → merged to `develop` via [PR #16](https://github.com/Vedanti1703/devops/pull/16)
+- **Commits:**
+  | Commit | Message |
+  |--------|---------|
+  | `8f573c2` | `test: introduce deliberate defect for pipeline demo` |
+  | `2f5562b` | Merge commit — PR #16 into `develop` |
+- **Defect Introduced:** `dashboard.html` heading changed from `Telecom Operations KPI Dashboard` → `Overview`, causing `WorkflowDashboardSeleniumTest.dashboard_isAccessibleAndShowsStats` (TC-W-02) to fail.
+- **Pipeline Run 2 — RED ❌:** Test stage FAILED → Package and Deploy stages **SKIPPED** (pipeline gating confirmed; deployment blocked).
+
+### Part 3 — Defect Fix & Redeployment (PR #17)
+
+- **Branch:** `bugfix/fix-defect` → merged to `develop` via [PR #17](https://github.com/Vedanti1703/devops/pull/17)
+- **Commits:**
+  | Commit | Message |
+  |--------|---------|
+  | `9048dd0` | `fix: correct defect found by Selenium tests` |
+  | `3e1f165` | Merge commit — PR #17 into `develop` |
+- **Fix Applied:** Heading in `dashboard.html` restored to `Telecom Operations KPI Dashboard`.
+- **Pipeline Run 3 — GREEN ✅:** All 21 tests pass; Package and Deploy ran; WAR redeployed to Tomcat.
+
+### Git Log — `develop` branch (Task 9 + 10 range)
+
+```
+*   3e1f165 Merge pull request #17 from Vedanti1703/bugfix/fix-defect
+|\
+| * 9048dd0 fix: correct defect found by Selenium tests
+|/
+*   2f5562b Merge pull request #16 from Vedanti1703/bugfix/intentional-defect
+|\
+| * 8f573c2 test: introduce deliberate defect for pipeline demo
+|/
+*   9ced854 Merge pull request #15 from Vedanti1703/feature/jenkins-testing
+|\
+| * 1c71c3b docs: add continuous testing documentation
+| * 44fd6af ci: add selenium test stage to Jenkinsfile
+|/
+*   8f0e65b Merge pull request #14 from Vedanti1703/feature/selenium-tests
+|\
+| * 940d472 fix(selenium): reliable form submit and input filling via JS in headless Chrome
+| * cc2e8b9 fix(selenium): robust form-wait and in-memory H2 for tests
+| * 40d5531 fix(selenium): screenshot extension fires before driver quit
+| * c8d86de test(selenium): add Selenium E2E tests for Task 9
+|/
+```
+
+### 3 Pipeline Runs Summary
+
+| Run # | Status | Trigger (PR) | Merge Commit | Description |
+|:---:|:---:|:---:|:---:|---|
+| 1 | ✅ GREEN | PR #15 | `9ced854` | Baseline: 21 tests pass, full pipeline executes, WAR deployed |
+| 2 | ❌ RED | PR #16 | `2f5562b` | Deliberate defect: `TC-W-02` fails, Package & Deploy **blocked** |
+| 3 | ✅ GREEN | PR #17 | `3e1f165` | Fix applied: 21 tests pass again, WAR redeployed to Tomcat |
+
+### Screenshots Still Required
+
+| # | Screenshot | Where to Capture |
+|:---:|---|---|
+| 1 | Jenkins **Run 1 (GREEN)** — pipeline stage view (Test ✅, Package ✅, Deploy ✅) | Jenkins → `tower-portal-pipeline` → Build #N |
+| 2 | Jenkins **Run 2 (RED)** — Test stage RED, Package & Deploy SKIPPED | Jenkins → `tower-portal-pipeline` → Build #N+1 |
+| 3 | Jenkins **Run 3 (GREEN)** — all stages green after fix | Jenkins → `tower-portal-pipeline` → Build #N+2 |
+| 4 | Jenkins **JUnit test report** — 21 tests, 0 failures graph | Jenkins → Build → Test Result |
+| 5 | Jenkins **archived screenshots** — `target/screenshots/*.png` artifacts panel | Jenkins → Build → Artifacts |
+| 6 | Terminal — `mvn clean test` output with `Tests run: 21, Failures: 0, Errors: 0` | PowerShell locally |
+| 7 | GitHub PR #15 merged — Jenkinsfile Test stage addition | https://github.com/Vedanti1703/devops/pull/15 |
+| 8 | GitHub PR #16 merged — deliberate defect | https://github.com/Vedanti1703/devops/pull/16 |
+| 9 | GitHub PR #17 merged — defect fix | https://github.com/Vedanti1703/devops/pull/17 |
 
